@@ -17,7 +17,7 @@ import pytz
 timezone = pytz.timezone('Asia/Tashkent')
 
 
-@dp.message_handler(text=['O`yinni boshlash'])
+@dp.message_handler(text=['O`yinni boshlash', 'Keyingisi'])
 async def start_game(message: types.Message):
     chat_id = message.chat.id
     client = Clients()
@@ -26,9 +26,37 @@ async def start_game(message: types.Message):
                              reply_markup=ReplyKeyboardRemove())
         await Register.name.set()
     else:
-        await Game.game.set()
-        await message.answer("O`yinni boshlash uchun tugmani bosing!",
-                             reply_markup=Buttons.start_game())
+        max_attempt = 2
+        all_gifts = Gifts().all_gifts()
+        if all_gifts:
+            chat_id = message.chat.id
+            clients = Clients()
+            try:
+                attempt, status = clients.how_attempt_status(chat_id=chat_id)
+                if attempt < 3 and status == 'open':
+                    choose = all_gifts[random.randint(0, len(all_gifts) - 1)][1]
+                    msg = await message.answer(f'{choose.upper()}')
+                    await shuffle_algo(message, msg, choose, all_gifts)
+                    await message.answer('🎁')
+                    if max_attempt - attempt == 0:
+                        await message.answer(
+                            '</b>Barcha imkoniyatdan foydalanib bo`ldingiz.</b>\nSovg`ani ko`rish uchun tugmani bosing.',
+                            reply_markup=Buttons.show_gift())
+                    else:
+                        await message.answer(
+                            f'Sizda <b>{max_attempt - attempt}</b> urinish bor xohlasangiz shu yerda butunlay to`xtishingiz mumkin.',
+                            reply_markup=Buttons().next_select())
+                else:
+                    await message.answer(
+                        '</b>Barcha imkoniyatdan foydalanib bo`ldingiz.</b>\nSovg`ani ko`rish uchun tugmani bosing.',
+                        reply_markup=Buttons.show_gift())
+            except Exception as e:
+                await message.answer("<b>Botni qaytadan ishga tushuring: /start</b>")
+        else:
+            await message.answer('<b>Hali sovg`alar qo`shilmagan bu haqida adminga habar bering.</b>\n\n'
+                                 f'<b>Bog`lanish uchun:</b>'
+                                 f'\n\t<b>Chat: <a href="https://t.me/macshop_admin">Admin </a></b>'
+                                 f'\n\t<b>Kanal: <a href="https://t.me/macshop_uz">Macshop.uz</a></b>')
 
 
 @dp.message_handler(content_types=types.ContentTypes.TEXT, state=Register.name)
@@ -36,7 +64,7 @@ async def get_name(message: types, state: FSMContext):
     async with state.proxy() as data:
         data['name'] = message.text
     await message.answer(
-        'Ismingiz qabul qilindi.\n<b>Raqamingizni ulashing</b>, bu siz bilan bog`lanishimiz uchun kerak!',
+        '<b>Raqamingizni ulashing</b>\nbu siz bilan bog`lanishimiz uchun kerak!',
         reply_markup=Buttons.share_contact())
     await Register.contact.set()
 
@@ -49,41 +77,20 @@ async def get_contact(message: types.Message, state: FSMContext):
         clients = Clients()
         clients.insert_clients(chat_id=message.chat.id, name=name, contact=contact)
     await message.answer("Ma`lumotlar qabul qilindi.\nO`yinni boshlash uchun tugmani bosing!",
-                         reply_markup=Buttons.start_game())
+                         reply_markup=Buttons.start_game_ready())
     await state.finish()
-
-
-@dp.message_handler(text=['Boshlash', 'Keyingisi'], state=None)
-@dp.message_handler(text=['Boshlash', 'Keyingisi'], state=Game.game)
-async def game(message: types.Message, state: FSMContext):
-    max_attempt = 2
-    all_gifts = Gifts().all_gifts()
-
-    chat_id = message.chat.id
-    clients = Clients()
-    try:
-        attempt, status = clients.how_attempt_status(chat_id=chat_id)
-        if attempt < 3 and status == 'open':
-            choose = all_gifts[random.randint(0, len(all_gifts) - 1)][1]
-            msg = await message.answer(f'{choose.upper()}')
-            await shuffle_algo(message, msg, choose, all_gifts)
-            await message.answer('🎁')
-            await message.answer(
-                f'Sizda <tg-spoiler>{max_attempt - attempt}</tg-spoiler> urinish bor xohlasangiz shu yerda butunlay to`xtishingiz mumkin.',
-                reply_markup=Buttons().next_select())
-        else:
-            await message.answer('Barcha imkoniyatdan foydalanib bo`ldingiz.\nSovg`ani ko`rish uchun tugmani bosing.',
-                                 reply_markup=Buttons.show_gift())
-        await state.finish()
-    except Exception as e:
-        await message.answer("<b>Botni qaytadan ishga tushuring: /start</b>")
 
 
 async def shuffle_algo(message, msg, choose, all_gifts):
     clients = Clients()
     choose = None
     chat_id = message.chat.id
-    for gift in range(4):
+    count = None
+    if len(Gifts().all_gifts()) == 1:
+        count = 1
+    else:
+        count = 3
+    for gift in range(count):
         try:
             choose = all_gifts[random.randint(0, len(all_gifts) - 1)]
             await msg.edit_text(f"<b>{choose[1].upper()}</b>")

@@ -40,9 +40,9 @@ async def delete_gift(message: types.Message):
 @dp.message_handler(commands=['gifts'])
 async def all_gifts(message: types.Message):
     chat_id = message.chat.id
+    gifts = Gifts()
+    datas = gifts.all_gifts()
     if str(chat_id) in ADMINS:
-        gifts = Gifts()
-        datas = gifts.all_gifts()
         if datas:
             text = ("<b>Sovg`alar:</b>\n\n"
                     "<b>Agar sovg`a <code>qo`shimoqchi</code> bo`lsangiz:</b>.\n"
@@ -54,11 +54,19 @@ async def all_gifts(message: types.Message):
             await message.answer(text, reply_markup=ReplyKeyboardRemove())
         else:
             await message.answer(
-                "Hozircha hech qanday sovg`a qo`shilmagan.\n\n"
+                "<b>Hozircha hech qanday sovg`a qo`shilmagan.</b>\n\n"
                 "Agar sovg`a qo`shimoqchi bo`lsangiz:\n"
-                "#add sovg`a_nomi - deb sovg`a nomini yozsangiz qo`shiladi.\n\n"
+                "<tg-spoiler><b>#add sovg`a_nomi</b></tg-spoiler> - deb sovg`a nomini yozsangiz qo`shiladi.\n\n"
                 "Agar sovg`ani  o`chirmoqchi bo`lsangiz:\n"
-                "#del 10 - deb sovg`a nomerini yozsangiz o`chib ketadi.",
+                "<tg-spoiler><b>#del 10</b></tg-spoiler> - deb sovg`a nomerini yozsangiz o`chib ketadi.",
                 reply_markup=ReplyKeyboardRemove())
     else:
-        await message.answer('Afsuski siz sovg`alarni o`yin davomida ko`ra olasiz.', reply_markup=ReplyKeyboardRemove())
+        if datas:
+            await message.answer(f'🎁 Sovg`lar soni: {len(datas)} ta.', reply_markup=ReplyKeyboardRemove())
+        else:
+            await message.answer(
+                '<b>Hali sovg`alar qo`shilmagan bu haqida adminga habar bering.</b>\n\n'
+                f'<b>Bog`lanish uchun:</b>'
+                f'\n\t<b>Chat: <a href="https://t.me/macshop_admin">Admin </a></b>'
+                f'\n\t<b>Kanal: <a href="https://t.me/macshop_uz">Macshop.uz</a></b>',
+                reply_markup=ReplyKeyboardRemove())

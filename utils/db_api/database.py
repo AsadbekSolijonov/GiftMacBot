@@ -6,7 +6,8 @@ from abc import ABC, abstractmethod
 class Database(ABC):
     def __init__(self):
         # /var/bots/GiftMacBot/
-        self.conn = pysqlite3.connect('/var/bots/GiftMacBot/database.db')
+        # /Users/asadbeksolijonov/Bots/GiftMacShopBot/
+        self.conn = pysqlite3.connect('/var/bots/GiftMacBot//database.db')
         self.cursor = self.conn.cursor()
         self.create_table()
 
@@ -92,6 +93,11 @@ class Clients(Database):
     def find_gift(self, chat_id):
         sql = """SELECT gift, status, day FROM Clients WHERE chat_id = ?"""
         data = self.cursor.execute(sql, (chat_id,)).fetchone()
+        return data if data else None
+
+    def all_clients(self):
+        sql = """SELECT COUNT(chat_id) FROM Clients"""
+        data = self.cursor.execute(sql).fetchone()
         return data if data else None
 
 

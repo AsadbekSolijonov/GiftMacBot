@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 
 class Database(ABC):
     def __init__(self):
+        # /var/bots/GiftMacBot/
         self.conn = pysqlite3.connect('/var/bots/GiftMacBot/database.db')
         self.cursor = self.conn.cursor()
         self.create_table()

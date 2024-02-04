@@ -54,7 +54,11 @@ async def all_gifts(message: types.Message):
             await message.answer(text, reply_markup=ReplyKeyboardRemove())
         else:
             await message.answer(
-                'Hozircha hech qanday sovg`a qo`shilmagan. Sovg`a qo`shish uchun. /gifts qoidasiga amal qiling.',
+                "Hozircha hech qanday sovg`a qo`shilmagan.\n\n"
+                "Agar sovg`a qo`shimoqchi bo`lsangiz:\n"
+                "#add sovg`a_nomi - deb sovg`a nomini yozsangiz qo`shiladi.\n\n"
+                "Agar sovg`ani  o`chirmoqchi bo`lsangiz:\n"
+                "#del 10 - deb sovg`a nomerini yozsangiz o`chib ketadi.",
                 reply_markup=ReplyKeyboardRemove())
     else:
         await message.answer('Afsuski siz sovg`alarni o`yin davomida ko`ra olasiz.', reply_markup=ReplyKeyboardRemove())

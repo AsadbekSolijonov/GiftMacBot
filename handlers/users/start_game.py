@@ -67,7 +67,6 @@ async def game(message: types.Message, state: FSMContext):
             choose = all_gifts[random.randint(0, len(all_gifts) - 1)][1]
             msg = await message.answer(f'{choose.upper()}')
             await shuffle_algo(message, msg, choose, all_gifts)
-            await state.finish()
             await message.answer('🎁')
             await message.answer(
                 f'Sizda <tg-spoiler>{max_attempt - attempt}</tg-spoiler> urinish bor xohlasangiz shu yerda butunlay to`xtishingiz mumkin.',
@@ -75,7 +74,7 @@ async def game(message: types.Message, state: FSMContext):
         elif attempt == 3 and status == 'close':
             await message.answer('Barcha imkoniyatdan foydalanib bo`ldingiz.\nSovg`ani ko`rish uchun tugmani bosing.',
                                  reply_markup=Buttons.show_gift())
-            await state.finish()
+        await state.finish()
     except Exception as e:
         await message.answer("<b>Botni qaytadan ishga tushuring: /start</b>")
 

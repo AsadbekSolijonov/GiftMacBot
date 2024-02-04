@@ -40,7 +40,7 @@ async def start_game(message: types.Message):
                     await message.answer('🎁')
                     if max_attempt - attempt == 0:
                         await message.answer(
-                            '</b>Barcha imkoniyatdan foydalanib bo`ldingiz.</b>\nSovg`ani ko`rish uchun tugmani bosing.',
+                            '<b>Barcha imkoniyatdan foydalanib bo`ldingiz.</b>\nSovg`ani ko`rish uchun tugmani bosing.',
                             reply_markup=Buttons.show_gift())
                     else:
                         await message.answer(
@@ -48,9 +48,10 @@ async def start_game(message: types.Message):
                             reply_markup=Buttons().next_select())
                 else:
                     await message.answer(
-                        '</b>Barcha imkoniyatdan foydalanib bo`ldingiz.</b>\nSovg`ani ko`rish uchun tugmani bosing.',
+                        '<b>Barcha imkoniyatdan foydalanib bo`ldingiz.</b>\nSovg`ani ko`rish uchun tugmani bosing.',
                         reply_markup=Buttons.show_gift())
             except Exception as e:
+                logging.warning(f'{e}')
                 await message.answer("<b>Botni qaytadan ishga tushuring: /start</b>")
         else:
             await message.answer('<b>Hali sovg`alar qo`shilmagan bu haqida adminga habar bering.</b>\n\n'
@@ -105,7 +106,7 @@ async def shuffle_algo(message, msg, choose, all_gifts):
         clients.plus_attempt(chat_id=chat_id)
 
 
-@dp.message_handler(text=['Tanlash'])
+@dp.message_handler(text=['Sovg`ani Tanlash'])
 async def selected_gift(message: types.Message, state: FSMContext):
     chat_id = message.chat.id
     clients = Clients()

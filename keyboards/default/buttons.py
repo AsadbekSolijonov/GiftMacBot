@@ -27,7 +27,7 @@ class Buttons:
     def next_select():
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
         next_ = KeyboardButton('Keyingisi')
-        select = KeyboardButton('Tanlash')
+        select = KeyboardButton('Sovg`ani Tanlash')
         keyboard.add(next_, select)
         return keyboard
 

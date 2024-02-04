@@ -71,7 +71,7 @@ async def game(message: types.Message, state: FSMContext):
             await message.answer(
                 f'Sizda <tg-spoiler>{max_attempt - attempt}</tg-spoiler> urinish bor xohlasangiz shu yerda butunlay to`xtishingiz mumkin.',
                 reply_markup=Buttons().next_select())
-        elif attempt == 3 and status == 'close':
+        elif status == 'close':
             await message.answer('Barcha imkoniyatdan foydalanib bo`ldingiz.\nSovg`ani ko`rish uchun tugmani bosing.',
                                  reply_markup=Buttons.show_gift())
         await state.finish()

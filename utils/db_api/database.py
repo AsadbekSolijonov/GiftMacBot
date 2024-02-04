@@ -1,11 +1,11 @@
 import logging
-import sqlite3
+import pysqlite3
 from abc import ABC, abstractmethod
 
 
 class Database(ABC):
     def __init__(self):
-        self.conn = sqlite3.connect('/Users/asadbeksolijonov/Bots/GiftMacShopBot/database.db')
+        self.conn = pysqlite3.connect('/Users/asadbeksolijonov/Bots/GiftMacShopBot/database.db')
         self.cursor = self.conn.cursor()
         self.create_table()
 
